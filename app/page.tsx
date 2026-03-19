@@ -498,13 +498,13 @@ export default function Home() {
             <button
               type="button"
               onClick={() => {
-                const confirmEnd = confirm("End this scene and return to Scene Log?");
+                const confirmEnd = confirm("Save and end this scene?");
                 if (!confirmEnd) return;
                 endActiveScene();
               }}
-              className="mt-6 w-full rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-red-500"
+              className="mt-6 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-purple-500"
             >
-              End Scene
+              Save & End Scene
             </button>
           </div>
         </div>
@@ -630,17 +630,19 @@ export default function Home() {
               </div>
             ) : (
               sortedScenes.map((scene) => (
-                <button
+                <div
                   key={scene.id}
-                  type="button"
-                  onClick={() => {
-                    setReviewSceneId(scene.id);
-                    setViewMode("review");
-                  }}
                   className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-zinc-600 hover:bg-zinc-900"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
+                  <div className="flex items-stretch justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReviewSceneId(scene.id);
+                        setViewMode("review");
+                      }}
+                      className="min-w-0 flex-1 text-left"
+                    >
                       <p className="text-base font-medium text-white">
                         {scene.sceneName}
                       </p>
@@ -650,13 +652,29 @@ export default function Home() {
                         {" - "}
                         {scene.endedAt ? formatTime(scene.endedAt) : "Open"}
                       </p>
-                    </div>
+                    </button>
 
-                    <span className="shrink-0 rounded bg-zinc-800 px-2 py-1 text-[10px] uppercase tracking-wide text-zinc-300">
-                      {scene.sceneSetupType === "MIV" ? "MIV" : "ACT/OTF"}
-                    </span>
+                    <div className="flex shrink-0 flex-col items-end justify-between">
+                      <span className="rounded bg-zinc-800 px-2 py-1 text-[10px] uppercase tracking-wide text-zinc-300">
+                        {scene.sceneSetupType === "MIV" ? "MIV" : "ACT/OTF"}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const confirmDelete = confirm("Delete this scene?");
+                          if (!confirmDelete) return;
+
+                          setScenes((prev) => prev.filter((s) => s.id !== scene.id));
+                        }}
+                        className="rounded px-2 py-1 text-xs text-zinc-400 transition hover:text-red-400"
+                        title="Delete scene"
+                      >
+                        🗑
+                      </button>
+                    </div>
                   </div>
-                </button>
+                </div>
               ))
             )}
           </div>

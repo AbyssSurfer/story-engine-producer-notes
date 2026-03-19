@@ -106,14 +106,14 @@ export default function Home() {
 
   const activeSceneLatestNotes = activeScene
     ? [...activeScene.notes].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      ).slice(0, 3)
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ).slice(0, 3)
     : [];
 
   const reviewSceneNotes = reviewScene
     ? [...reviewScene.notes].sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      )
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
     : [];
 
   const resetCreateForm = () => {
@@ -182,11 +182,11 @@ export default function Home() {
         scene.id !== sceneId
           ? scene
           : {
-              ...scene,
-              notes: scene.notes.map((note) =>
-                note.id === noteId ? { ...note, isGold: !note.isGold } : note
-              ),
-            }
+            ...scene,
+            notes: scene.notes.map((note) =>
+              note.id === noteId ? { ...note, isGold: !note.isGold } : note
+            ),
+          }
       )
     );
   };
@@ -290,22 +290,20 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setSceneSetupType("Actuality / OTF")}
-                  className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${
-                    sceneSetupType === "Actuality / OTF"
-                      ? "border-white bg-white text-black"
-                      : "border-zinc-700 bg-zinc-950 text-white"
-                  }`}
+                  className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${sceneSetupType === "Actuality / OTF"
+                    ? "border-white bg-white text-black"
+                    : "border-zinc-700 bg-zinc-950 text-white"
+                    }`}
                 >
                   Actuality / OTF
                 </button>
                 <button
                   type="button"
                   onClick={() => setSceneSetupType("MIV")}
-                  className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${
-                    sceneSetupType === "MIV"
-                      ? "border-white bg-white text-black"
-                      : "border-zinc-700 bg-zinc-950 text-white"
-                  }`}
+                  className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${sceneSetupType === "MIV"
+                    ? "border-white bg-white text-black"
+                    : "border-zinc-700 bg-zinc-950 text-white"
+                    }`}
                 >
                   Master Interview
                 </button>
@@ -386,22 +384,20 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => setCaptureMode("Actuality")}
-                      className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${
-                        captureMode === "Actuality"
-                          ? "border-white bg-white text-black"
-                          : "border-zinc-700 bg-zinc-900 text-white"
-                      }`}
+                      className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${captureMode === "Actuality"
+                        ? "border-white bg-white text-black"
+                        : "border-zinc-700 bg-zinc-900 text-white"
+                        }`}
                     >
                       Actuality
                     </button>
                     <button
                       type="button"
                       onClick={() => setCaptureMode("OTF")}
-                      className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${
-                        captureMode === "OTF"
-                          ? "border-white bg-white text-black"
-                          : "border-zinc-700 bg-zinc-900 text-white"
-                      }`}
+                      className={`rounded-lg border px-3 py-3 text-sm font-medium transition ${captureMode === "OTF"
+                        ? "border-white bg-white text-black"
+                        : "border-zinc-700 bg-zinc-900 text-white"
+                        }`}
                     >
                       OTF
                     </button>
@@ -484,11 +480,10 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => toggleGold(activeScene.id, note.id)}
-                          className={`shrink-0 rounded-md border px-2 py-1 text-xs font-medium transition ${
-                            note.isGold
-                              ? "border-amber-400 bg-amber-300 text-black"
-                              : "border-zinc-700 bg-zinc-900 text-zinc-300"
-                          }`}
+                          className={`shrink-0 rounded-md border px-2 py-1 text-xs font-medium transition ${note.isGold
+                            ? "border-amber-400 bg-amber-300 text-black"
+                            : "border-zinc-700 bg-zinc-900 text-zinc-300"
+                            }`}
                           title="Toggle standout moment"
                         >
                           ★
@@ -502,8 +497,12 @@ export default function Home() {
 
             <button
               type="button"
-              onClick={endActiveScene}
-              className="mt-6 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm font-medium text-white transition hover:border-zinc-500 hover:bg-zinc-900"
+              onClick={() => {
+                const confirmEnd = confirm("End this scene and return to Scene Log?");
+                if (!confirmEnd) return;
+                endActiveScene();
+              }}
+              className="mt-6 w-full rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-red-500"
             >
               End Scene
             </button>
@@ -570,11 +569,10 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => toggleGold(reviewScene.id, note.id)}
-                          className={`shrink-0 rounded-md border px-2 py-1 text-xs font-medium transition ${
-                            note.isGold
-                              ? "border-amber-400 bg-amber-300 text-black"
-                              : "border-zinc-700 bg-zinc-900 text-zinc-300"
-                          }`}
+                          className={`shrink-0 rounded-md border px-2 py-1 text-xs font-medium transition ${note.isGold
+                            ? "border-amber-400 bg-amber-300 text-black"
+                            : "border-zinc-700 bg-zinc-900 text-zinc-300"
+                            }`}
                           title="Toggle standout moment"
                         >
                           ★
@@ -641,15 +639,23 @@ export default function Home() {
                   }}
                   className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-left transition hover:border-zinc-600 hover:bg-zinc-900"
                 >
-                  <p className="text-base font-medium text-white">
-                    {scene.sceneName}
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-400">{scene.location}</p>
-                  <p className="mt-2 text-sm text-zinc-500">
-                    {formatDate(scene.startedAt)} · {formatTime(scene.startedAt)}
-                    {" - "}
-                    {scene.endedAt ? formatTime(scene.endedAt) : "Open"}
-                  </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-base font-medium text-white">
+                        {scene.sceneName}
+                      </p>
+                      <p className="mt-1 text-sm text-zinc-400">{scene.location}</p>
+                      <p className="mt-2 text-sm text-zinc-500">
+                        {formatDate(scene.startedAt)} · {formatTime(scene.startedAt)}
+                        {" - "}
+                        {scene.endedAt ? formatTime(scene.endedAt) : "Open"}
+                      </p>
+                    </div>
+
+                    <span className="shrink-0 rounded bg-zinc-800 px-2 py-1 text-[10px] uppercase tracking-wide text-zinc-300">
+                      {scene.sceneSetupType === "MIV" ? "MIV" : "ACT/OTF"}
+                    </span>
+                  </div>
                 </button>
               ))
             )}

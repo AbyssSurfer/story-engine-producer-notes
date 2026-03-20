@@ -58,11 +58,17 @@ export default function Home() {
 
   const [captureMode, setCaptureMode] = useState<CaptureMode>("Actuality");
   const [noteText, setNoteText] = useState("");
+  const [noteJustSaved, setNoteJustSaved] = useState(false);
 
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [activeSceneId, setActiveSceneId] = useState<number | null>(null);
   const [reviewSceneId, setReviewSceneId] = useState<number | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
+
+  const [editingActiveTitle, setEditingActiveTitle] = useState(false);
+  const [editingReviewTitle, setEditingReviewTitle] = useState(false);
+  const [activeTitleDraft, setActiveTitleDraft] = useState("");
+  const [reviewTitleDraft, setReviewTitleDraft] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -137,6 +143,8 @@ export default function Home() {
 
     setScenes((prev) => [newScene, ...prev]);
     setActiveSceneId(newScene.id);
+    setActiveTitleDraft(newScene.sceneName);
+    setEditingActiveTitle(false);
     setCaptureMode(sceneSetupType === "MIV" ? "MIV" : "Actuality");
     setNoteText("");
     resetCreateForm();
@@ -164,6 +172,11 @@ export default function Home() {
           : scene
       )
     );
+
+    setNoteJustSaved(true);
+    window.setTimeout(() => {
+      setNoteJustSaved(false);
+    }, 1200);
   };
 
   const handleTypedNote = () => {
@@ -204,8 +217,40 @@ export default function Home() {
 
     setActiveSceneId(null);
     setNoteText("");
+    setNoteJustSaved(false);
     setCaptureMode("Actuality");
+    setEditingActiveTitle(false);
     setViewMode("log");
+  };
+
+  const saveActiveSceneTitle = () => {
+    if (!activeSceneId) return;
+
+    const nextTitle = activeTitleDraft.trim() || "Untitled Scene";
+
+    setScenes((prev) =>
+      prev.map((scene) =>
+        scene.id === activeSceneId ? { ...scene, sceneName: nextTitle } : scene
+      )
+    );
+
+    setActiveTitleDraft(nextTitle);
+    setEditingActiveTitle(false);
+  };
+
+  const saveReviewSceneTitle = () => {
+    if (!reviewSceneId) return;
+
+    const nextTitle = reviewTitleDraft.trim() || "Untitled Scene";
+
+    setScenes((prev) =>
+      prev.map((scene) =>
+        scene.id === reviewSceneId ? { ...scene, sceneName: nextTitle } : scene
+      )
+    );
+
+    setReviewTitleDraft(nextTitle);
+    setEditingReviewTitle(false);
   };
 
   if (!hasLoaded) {
@@ -350,9 +395,40 @@ export default function Home() {
               Active Scene
             </p>
 
-            <h1 className="mt-2 text-2xl font-semibold leading-tight">
-              {activeScene.sceneName}
-            </h1>
+            <div className="mt-2">
+              {editingActiveTitle ? (
+                <input
+                  type="text"
+                  value={activeTitleDraft}
+                  onChange={(e) => setActiveTitleDraft(e.target.value)}
+                  onBlur={saveActiveSceneTitle}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      saveActiveSceneTitle();
+                    }
+                    if (e.key === "Escape") {
+                      setActiveTitleDraft(activeScene.sceneName);
+                      setEditingActiveTitle(false);
+                    }
+                  }}
+                  autoFocus
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-2xl font-semibold leading-tight text-white outline-none focus:border-zinc-500"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTitleDraft(activeScene.sceneName);
+                    setEditingActiveTitle(true);
+                  }}
+                  className="w-full text-left text-2xl font-semibold leading-tight text-white"
+                  title="Edit scene title"
+                >
+                  {activeScene.sceneName}
+                </button>
+              )}
+            </div>
 
             <p className="mt-2 text-sm leading-relaxed text-zinc-400">
               {activeScene.location}
@@ -407,26 +483,6 @@ export default function Home() {
             </div>
 
             <div className="mt-5">
-              <label className="mb-2 block text-sm text-zinc-300">
-                Add Producer Note
-              </label>
-
-              <input
-                type="text"
-                placeholder="Type note and press Enter..."
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleTypedNote();
-                  }
-                }}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-base text-white outline-none focus:border-zinc-500"
-              />
-            </div>
-
-            <div className="mt-4">
               <p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-zinc-400">
                 Quick Tags
               </p>
@@ -443,6 +499,37 @@ export default function Home() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="mt-5">
+              <label className="mb-2 block text-sm text-zinc-300">
+                Add Producer Note
+              </label>
+
+              <input
+                type="text"
+                placeholder="Type note and press Enter..."
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleTypedNote();
+                  }
+                }}
+                className="w-full rounded-xl border-2 border-zinc-500 bg-zinc-950 px-4 py-3 text-base text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] outline-none transition focus:border-zinc-300"
+              />
+            </div>
+
+            <div className="mt-3 flex items-center justify-between">
+              <p className="text-[11px] text-zinc-500">
+                Press Enter to save note
+              </p>
+              {noteJustSaved ? (
+                <p className="text-[11px] font-medium text-emerald-400">
+                  Note saved
+                </p>
+              ) : null}
             </div>
 
             <div className="mt-5">
@@ -525,9 +612,40 @@ export default function Home() {
               Review Scene
             </p>
 
-            <h1 className="mt-2 text-2xl font-semibold leading-tight">
-              {reviewScene.sceneName}
-            </h1>
+            <div className="mt-2">
+              {editingReviewTitle ? (
+                <input
+                  type="text"
+                  value={reviewTitleDraft}
+                  onChange={(e) => setReviewTitleDraft(e.target.value)}
+                  onBlur={saveReviewSceneTitle}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      saveReviewSceneTitle();
+                    }
+                    if (e.key === "Escape") {
+                      setReviewTitleDraft(reviewScene.sceneName);
+                      setEditingReviewTitle(false);
+                    }
+                  }}
+                  autoFocus
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-2xl font-semibold leading-tight text-white outline-none focus:border-zinc-500"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReviewTitleDraft(reviewScene.sceneName);
+                    setEditingReviewTitle(true);
+                  }}
+                  className="w-full text-left text-2xl font-semibold leading-tight text-white"
+                  title="Edit scene title"
+                >
+                  {reviewScene.sceneName}
+                </button>
+              )}
+            </div>
 
             <p className="mt-2 text-sm text-zinc-400">{reviewScene.location}</p>
 
@@ -587,6 +705,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => {
+                setEditingReviewTitle(false);
                 setReviewSceneId(null);
                 setViewMode("log");
               }}
